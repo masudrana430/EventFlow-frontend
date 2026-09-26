@@ -41,9 +41,11 @@ const byRole: Record<UserRole, Array<{ href: string; label: string; icon: any }>
   ],
   ADMIN: [
     { href: "/dashboard/admin", label: "Admin center", icon: Settings },
+    { href: "/dashboard/finance", label: "Refunds & payouts", icon: WalletCards },
   ],
   SUPER_ADMIN: [
     { href: "/dashboard/admin", label: "Admin center", icon: Settings },
+    { href: "/dashboard/finance", label: "Refunds & payouts", icon: WalletCards },
   ],
 };
 
