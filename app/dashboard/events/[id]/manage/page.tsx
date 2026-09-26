@@ -26,12 +26,19 @@ export default function ManageEventPage() {
   });
   const [promoForm, setPromoForm] = useState({ code:"", value:"10", maxUses:"100", startAt:"", endAt:"" });
   const [announcement, setAnnouncement] = useState({ title:"", message:"" });
+  const [editForm, setEditForm] = useState({ shortDescription:"", contactPhone:"" });
 
   async function load() {
     try {
       const mine = await eventApi.mine();
       const found = mine.data.find((x:any)=>x.id===params.id);
       setEvent(found || null);
+      if (found) {
+        setEditForm({
+          shortDescription: found.shortDescription || "",
+          contactPhone: found.contactPhone || "",
+        });
+      }
       const p:any = await promoApi.forEvent(params.id).catch(()=>({data:[]}));
       setPromos(p.data || []);
     } catch (e) {
@@ -100,11 +107,20 @@ export default function ManageEventPage() {
         </form>
       </div>
 
+      <form className="card mt-6" onSubmit={(e)=>{e.preventDefault();run(()=>eventApi.update(params.id,editForm),"Event details updated.");}}>
+        <h2 className="text-xl font-black">Edit event details</h2>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <label className="sm:col-span-2"><span className="label">Short description</span><input className="input" value={editForm.shortDescription} onChange={(e)=>setEditForm({...editForm,shortDescription:e.target.value})} /></label>
+          <label><span className="label">Contact phone</span><input className="input" value={editForm.contactPhone} onChange={(e)=>setEditForm({...editForm,contactPhone:e.target.value})} /></label>
+        </div>
+        <button className="btn-secondary mt-4">Save event details</button>
+      </form>
+
       <div className="card mt-6">
         <h2 className="text-xl font-black">Ticket inventory</h2>
         <div className="mt-5 table-wrap">
           <table><thead><tr><th>Ticket</th><th>Price</th><th>Sold</th><th>Reserved</th><th>Capacity</th><th /></tr></thead><tbody>
-            {(event?.ticketTypes || []).map((ticket:any)=><tr key={ticket.id}><td className="font-bold">{ticket.name}</td><td>{formatMoney(ticket.price)}</td><td>{ticket.soldQuantity || 0}</td><td>{ticket.reservedQuantity || 0}</td><td>{ticket.quantity}</td><td><button className="text-xs font-bold text-rose-600" onClick={()=>run(()=>ticketTypeApi.remove(ticket.id),"Ticket type removed.")}>Delete</button></td></tr>)}
+            {(event?.ticketTypes || []).map((ticket:any)=><tr key={ticket.id}><td className="font-bold">{ticket.name}</td><td>{formatMoney(ticket.price)}</td><td>{ticket.soldQuantity || 0}</td><td>{ticket.reservedQuantity || 0}</td><td>{ticket.quantity}</td><td><div className="flex gap-2"><button className="text-xs font-bold text-indigo-700" onClick={()=>{const value=prompt("Max tickets per order",String(ticket.maxPerOrder||1));if(value)run(()=>ticketTypeApi.update(ticket.id,{maxPerOrder:Number(value)}),"Ticket type updated.");}}>Edit</button><button className="text-xs font-bold text-rose-600" onClick={()=>run(()=>ticketTypeApi.remove(ticket.id),"Ticket type removed.")}>Delete</button></div></td></tr>)}
           </tbody></table>
         </div>
       </div>
