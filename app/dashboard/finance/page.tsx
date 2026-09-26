@@ -5,7 +5,7 @@ import { Alert } from "@/components/Alert";
 import { EmptyState, Loading } from "@/components/Loading";
 import { getErrorMessage } from "@/lib/api";
 import { getLocalUser } from "@/lib/auth";
-import { payoutApi, refundApi } from "@/lib/services";
+import { disputeApi, payoutApi, refundApi } from "@/lib/services";
 import { formatDate, formatMoney, statusClass } from "@/lib/format";
 
 export default function FinancePage(){
@@ -13,6 +13,7 @@ export default function FinancePage(){
   const isAdmin=user?.role==="ADMIN"||user?.role==="SUPER_ADMIN";
   const [refunds,setRefunds]=useState<any[]>([]);
   const [payouts,setPayouts]=useState<any[]>([]);
+  const [disputes,setDisputes]=useState<any[]>([]);
   const [message,setMessage]=useState("");
   const [success,setSuccess]=useState("");
   const [loading,setLoading]=useState(true);
@@ -20,12 +21,14 @@ export default function FinancePage(){
   async function load(){
     setLoading(true);
     try{
-      const [r,p]:any[]=await Promise.all([
+      const [r,p,d]:any[]=await Promise.all([
         isAdmin?refundApi.all():refundApi.organizer(),
         isAdmin?payoutApi.all():payoutApi.mine(),
+        isAdmin?Promise.resolve({data:[]}):disputeApi.organizer(),
       ]);
       setRefunds(r.data||[]);
       setPayouts(p.data||[]);
+      setDisputes(d.data||[]);
     }catch(e){setMessage(getErrorMessage(e));}
     finally{setLoading(false);}
   }
@@ -65,6 +68,20 @@ export default function FinancePage(){
           </div>
         )}
       </section>
+
+      {!isAdmin && <section className="mt-10">
+        <h2 className="text-xl font-black">Organizer disputes</h2>
+        {!disputes.length?<div className="mt-4"><EmptyState title="No disputes" description="Attendee disputes for your events will appear here."/></div>:(
+          <div className="mt-4 space-y-3">
+            {disputes.map((d)=><div className="card" key={d.id}>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div><div className="flex items-center gap-2"><p className="font-bold">{d.reason}</p><span className={statusClass(d.status)}>{d.status}</span></div><p className="mt-2 text-sm text-slate-500">{d.description}</p></div>
+                {!d.organizerResponse&&<button className="btn-secondary !py-2" onClick={()=>{const response=prompt("Organizer response");if(response)run(()=>disputeApi.respond(d.id,response),"Dispute response submitted.");}}>Respond</button>}
+              </div>
+            </div>)}
+          </div>
+        )}
+      </section>}
 
       <section className="mt-10">
         <h2 className="text-xl font-black">Payouts</h2>
