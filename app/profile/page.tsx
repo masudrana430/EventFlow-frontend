@@ -12,6 +12,16 @@ export default function ProfilePage() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", location: "" });
   const [organizer, setOrganizer] = useState<any>(null);
+  const [organizerForm, setOrganizerForm] = useState({
+    organizationName: "",
+    phone: "",
+    address: "",
+    websiteUrl: "",
+    socialMediaUrl: "",
+    payoutMethod: "",
+    payoutAccountName: "",
+    payoutAccountNumber: "",
+  });
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -19,7 +29,21 @@ export default function ProfilePage() {
     getMe().then((r) => {
       setUser(r.data);
       setForm({ name: r.data.name || "", phone: r.data.phone || "", location: "" });
-      if (r.data.role === "ORGANIZER") organizerApi.me().then((x:any)=>setOrganizer(x.data)).catch(()=>undefined);
+      if (r.data.role === "ORGANIZER") {
+        organizerApi.me().then((x:any) => {
+          setOrganizer(x.data);
+          setOrganizerForm({
+            organizationName: x.data?.organizationName || "",
+            phone: x.data?.phone || "",
+            address: x.data?.address || "",
+            websiteUrl: x.data?.websiteUrl || "",
+            socialMediaUrl: x.data?.socialMediaUrl || "",
+            payoutMethod: x.data?.payoutMethod || "",
+            payoutAccountName: x.data?.payoutAccountName || "",
+            payoutAccountNumber: x.data?.payoutAccountNumber || "",
+          });
+        }).catch(()=>undefined);
+      }
     }).catch((e)=>setMessage(getErrorMessage(e)));
   }, []);
 
@@ -33,6 +57,28 @@ export default function ProfilePage() {
       });
       setUser(response.data || user);
       setSuccess("Profile updated.");
+    } catch (e) {
+      setMessage(getErrorMessage(e));
+    }
+  }
+
+  async function saveOrganizer(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const payload = {
+        organizationName: organizerForm.organizationName,
+        phone: organizerForm.phone,
+        address: organizerForm.address,
+        websiteUrl: organizerForm.websiteUrl || null,
+        socialMediaUrl: organizerForm.socialMediaUrl || null,
+        payoutMethod: organizerForm.payoutMethod || undefined,
+        payoutAccountName: organizerForm.payoutAccountName || undefined,
+        payoutAccountNumber: organizerForm.payoutAccountNumber || undefined,
+      };
+      const response: any = await organizerApi.updateMe(payload);
+      setOrganizer(response.data || organizer);
+      setSuccess("Organizer profile updated.");
+      setMessage("");
     } catch (e) {
       setMessage(getErrorMessage(e));
     }
@@ -80,15 +126,23 @@ export default function ProfilePage() {
         </form>
 
         {organizer && (
-          <div className="card">
-            <h2 className="text-xl font-black">Organizer profile</h2>
-            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-              <p><b>Organization:</b> {organizer.organizationName}</p>
-              <p><b>Status:</b> {organizer.approvalStatus}</p>
-              <p><b>Phone:</b> {organizer.phone || "—"}</p>
-              <p><b>Address:</b> {organizer.address || "—"}</p>
+          <form className="card" onSubmit={saveOrganizer}>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-xl font-black">Organizer profile</h2>
+              <span className="badge">{organizer.approvalStatus}</span>
             </div>
-          </div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <label><span className="label">Organization name</span><input className="input" value={organizerForm.organizationName} onChange={(e)=>setOrganizerForm({...organizerForm,organizationName:e.target.value})} /></label>
+              <label><span className="label">Phone</span><input className="input" value={organizerForm.phone} onChange={(e)=>setOrganizerForm({...organizerForm,phone:e.target.value})} /></label>
+              <label className="sm:col-span-2"><span className="label">Address</span><input className="input" value={organizerForm.address} onChange={(e)=>setOrganizerForm({...organizerForm,address:e.target.value})} /></label>
+              <label><span className="label">Website</span><input className="input" type="url" value={organizerForm.websiteUrl} onChange={(e)=>setOrganizerForm({...organizerForm,websiteUrl:e.target.value})} /></label>
+              <label><span className="label">Social media URL</span><input className="input" type="url" value={organizerForm.socialMediaUrl} onChange={(e)=>setOrganizerForm({...organizerForm,socialMediaUrl:e.target.value})} /></label>
+              <label><span className="label">Payout method</span><input className="input" value={organizerForm.payoutMethod} onChange={(e)=>setOrganizerForm({...organizerForm,payoutMethod:e.target.value})} placeholder="BANK / MFS" /></label>
+              <label><span className="label">Payout account name</span><input className="input" value={organizerForm.payoutAccountName} onChange={(e)=>setOrganizerForm({...organizerForm,payoutAccountName:e.target.value})} /></label>
+              <label className="sm:col-span-2"><span className="label">Payout account number</span><input className="input" value={organizerForm.payoutAccountNumber} onChange={(e)=>setOrganizerForm({...organizerForm,payoutAccountNumber:e.target.value})} /></label>
+            </div>
+            <button className="btn-secondary mt-5">Save organizer profile</button>
+          </form>
         )}
       </div>
     </div>
