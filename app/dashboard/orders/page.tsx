@@ -13,8 +13,10 @@ export default function OrdersPage() {
   const [payments, setPayments] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [paymentState, setPaymentState] = useState("");
 
   useEffect(() => {
+    setPaymentState(new URLSearchParams(location.search).get("payment") || "");
     Promise.all([orderApi.mine(), orderApi.myPayments()])
       .then(([o,p]: any[]) => {
         setOrders(Array.isArray(o.data) ? o.data : []);
@@ -28,6 +30,7 @@ export default function OrdersPage() {
     <div>
       <h1 className="page-title">Orders & payments</h1>
       <p className="mt-2 text-slate-500">Track ticket orders and verified payment activity.</p>
+      {paymentState === "cancelled" && <div className="mt-5"><Alert type="warning">Payment was cancelled. Any active reservation will expire according to the backend reservation window.</Alert></div>}
       {error && <div className="mt-5"><Alert type="error">{error}</Alert></div>}
       {loading ? <Loading /> : orders.length === 0 ? <div className="mt-8"><EmptyState title="No orders yet" description="Browse a published event and reserve your first ticket." /></div> : (
         <div className="mt-8 table-wrap">
