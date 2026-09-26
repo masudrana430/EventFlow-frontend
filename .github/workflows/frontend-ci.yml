@@ -1,0 +1,29 @@
+name: EventFlow Frontend CI
+
+on:
+  push:
+    branches: [main, feature/full-eventflow-frontend]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_URL: https://eventflow-ln9q.onrender.com/api/v1
+      NEXT_PUBLIC_APP_NAME: EventFlow
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check and production build
+        run: npm run build
