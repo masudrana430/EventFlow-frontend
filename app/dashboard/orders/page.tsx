@@ -40,7 +40,7 @@ export default function OrdersPage() {
               <tr key={order.id}>
                 <td className="font-mono text-xs">{order.orderNumber || order.id}</td>
                 <td className="font-semibold">{order.event?.title || "Event order"}</td>
-                <td>{formatMoney(order.totalAmount ?? order.amount ?? 0)}</td>
+                <td>{formatMoney(order.total ?? order.totalAmount ?? order.amount ?? 0)}</td>
                 <td><span className={statusClass(order.status)}>{order.status}</span></td>
                 <td>{formatDate(order.createdAt)}</td>
                 <td><Link className="font-bold text-indigo-700" href={`/dashboard/orders/${order.id}`}>View</Link></td>
