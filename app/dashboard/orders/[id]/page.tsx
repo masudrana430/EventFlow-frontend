@@ -33,7 +33,7 @@ export default function OrderDetailsPage() {
           <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
             <div className="card"><p className="text-xs text-slate-400">Order</p><p className="mt-2 font-mono text-sm font-bold">{order.orderNumber || order.id}</p></div>
             <div className="card"><p className="text-xs text-slate-400">Status</p><p className="mt-2"><span className={statusClass(order.status)}>{order.status}</span></p></div>
-            <div className="card"><p className="text-xs text-slate-400">Total</p><p className="mt-2 text-xl font-black">{formatMoney(order.totalAmount ?? order.amount)}</p></div>
+            <div className="card"><p className="text-xs text-slate-400">Total</p><p className="mt-2 text-xl font-black">{formatMoney(order.total ?? order.totalAmount ?? order.amount ?? 0)}</p></div>
             <div className="card"><p className="text-xs text-slate-400">Created</p><p className="mt-2 text-sm font-bold">{formatDate(order.createdAt)}</p></div>
           </div>
 
