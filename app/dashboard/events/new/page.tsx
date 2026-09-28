@@ -27,6 +27,7 @@ export default function CreateEventPage() {
     contactEmail: "",
     contactPhone: "",
     capacity: "100",
+    currency: "BDT" as "BDT" | "USD",
     policies: "Bring a valid digital ticket",
   });
 
@@ -53,6 +54,7 @@ export default function CreateEventPage() {
         contactEmail: form.contactEmail,
         contactPhone: form.contactPhone || undefined,
         capacity: Number(form.capacity),
+        currency: form.currency,
         policies: form.policies.split("\n").map((x)=>x.trim()).filter(Boolean),
         refundPolicyType: "DEFAULT",
       });
@@ -72,6 +74,7 @@ export default function CreateEventPage() {
         <div className="grid gap-4 md:grid-cols-2">
           <label><span className="label">Category</span><select className="input" value={form.categoryId} onChange={(e)=>setForm({...form,categoryId:e.target.value})} required><option value="">Select category</option>{categories.map((c)=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
           <label><span className="label">Capacity</span><input className="input" type="number" min={1} value={form.capacity} onChange={(e)=>setForm({...form,capacity:e.target.value})} required /></label>
+          <label><span className="label">Currency</span><select className="input" value={form.currency} onChange={(e)=>setForm({...form,currency:e.target.value as "BDT" | "USD"})}><option value="BDT">BDT — Bangladeshi Taka</option><option value="USD">USD — US Dollar</option></select><p className="mt-2 text-xs text-slate-500">All ticket prices, payments, refunds and payouts for this event use this currency.</p></label>
           <label className="md:col-span-2"><span className="label">Event title</span><input className="input" value={form.title} onChange={(e)=>setForm({...form,title:e.target.value})} required /></label>
           <label className="md:col-span-2"><span className="label">Short description</span><input className="input" value={form.shortDescription} onChange={(e)=>setForm({...form,shortDescription:e.target.value})} required /></label>
           <label className="md:col-span-2"><span className="label">Full description</span><textarea className="textarea min-h-36" value={form.description} onChange={(e)=>setForm({...form,description:e.target.value})} required /></label>

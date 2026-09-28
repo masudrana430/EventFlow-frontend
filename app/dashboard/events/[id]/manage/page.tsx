@@ -26,7 +26,11 @@ export default function ManageEventPage() {
   });
   const [promoForm, setPromoForm] = useState({ code:"", value:"10", maxUses:"100", startAt:"", endAt:"" });
   const [announcement, setAnnouncement] = useState({ title:"", message:"" });
-  const [editForm, setEditForm] = useState({ shortDescription:"", contactPhone:"" });
+  const [editForm, setEditForm] = useState({
+    shortDescription:"",
+    contactPhone:"",
+    currency:"BDT" as "BDT" | "USD",
+  });
 
   async function load() {
     try {
@@ -37,6 +41,7 @@ export default function ManageEventPage() {
         setEditForm({
           shortDescription: found.shortDescription || "",
           contactPhone: found.contactPhone || "",
+          currency: found.currency || "BDT",
         });
       }
       const p:any = await promoApi.forEvent(params.id).catch(()=>({data:[]}));
@@ -60,7 +65,7 @@ export default function ManageEventPage() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <span className={statusClass(event?.status)}>{event?.status}</span>
+          <div className="flex flex-wrap gap-2"><span className={statusClass(event?.status)}>{event?.status}</span><span className="badge bg-slate-100 text-slate-700">{event?.currency || "BDT"}</span></div>
           <h1 className="mt-3 page-title">{event?.title || "Event"}</h1>
           <p className="mt-2 text-slate-500">{formatDate(event?.startDateTime)} · {event?.venueName || event?.venueAddress}</p>
         </div>
@@ -90,11 +95,11 @@ export default function ManageEventPage() {
           saleStartAt:new Date(ticketForm.saleStartAt).toISOString(),saleEndAt:new Date(ticketForm.saleEndAt).toISOString(),
           transferable:ticketForm.transferable,refundable:ticketForm.refundable,benefits:ticketForm.benefits.split("\n").filter(Boolean),isVisible:true
         }),"Ticket type created.");}}>
-          <h2 className="text-xl font-black">Create ticket type</h2>
+          <h2 className="text-xl font-black">Create ticket type</h2><p className="mt-2 text-sm text-slate-500">Prices use the event currency: <b>{event?.currency || "BDT"}</b>.</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <label className="sm:col-span-2"><span className="label">Name</span><input className="input" value={ticketForm.name} onChange={(e)=>setTicketForm({...ticketForm,name:e.target.value})} required /></label>
             <label className="sm:col-span-2"><span className="label">Description</span><input className="input" value={ticketForm.description} onChange={(e)=>setTicketForm({...ticketForm,description:e.target.value})} /></label>
-            <label><span className="label">Price (BDT)</span><input className="input" type="number" min={0} value={ticketForm.price} onChange={(e)=>setTicketForm({...ticketForm,price:e.target.value})} required /></label>
+            <label><span className="label">Price ({event?.currency || "BDT"})</span><input className="input" type="number" min={0} value={ticketForm.price} onChange={(e)=>setTicketForm({...ticketForm,price:e.target.value})} required /></label>
             <label><span className="label">Quantity</span><input className="input" type="number" min={1} value={ticketForm.quantity} onChange={(e)=>setTicketForm({...ticketForm,quantity:e.target.value})} required /></label>
             <label><span className="label">Max per order</span><input className="input" type="number" min={1} value={ticketForm.maxPerOrder} onChange={(e)=>setTicketForm({...ticketForm,maxPerOrder:e.target.value})} /></label>
             <label><span className="label">Sales start</span><input className="input" type="datetime-local" value={ticketForm.saleStartAt} onChange={(e)=>setTicketForm({...ticketForm,saleStartAt:e.target.value})} required /></label>
@@ -112,6 +117,7 @@ export default function ManageEventPage() {
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <label className="sm:col-span-2"><span className="label">Short description</span><input className="input" value={editForm.shortDescription} onChange={(e)=>setEditForm({...editForm,shortDescription:e.target.value})} /></label>
           <label><span className="label">Contact phone</span><input className="input" value={editForm.contactPhone} onChange={(e)=>setEditForm({...editForm,contactPhone:e.target.value})} /></label>
+          <label><span className="label">Currency</span><select className="input" value={editForm.currency} disabled={(event?.ticketTypes || []).length > 0} onChange={(e)=>setEditForm({...editForm,currency:e.target.value as "BDT" | "USD"})}><option value="BDT">BDT — Bangladeshi Taka</option><option value="USD">USD — US Dollar</option></select>{(event?.ticketTypes || []).length > 0 && <p className="mt-2 text-xs text-slate-500">Currency is locked after the first ticket type is created.</p>}</label>
         </div>
         <button className="btn-secondary mt-4">Save event details</button>
       </form>
@@ -120,7 +126,7 @@ export default function ManageEventPage() {
         <h2 className="text-xl font-black">Ticket inventory</h2>
         <div className="mt-5 table-wrap">
           <table><thead><tr><th>Ticket</th><th>Price</th><th>Sold</th><th>Reserved</th><th>Capacity</th><th /></tr></thead><tbody>
-            {(event?.ticketTypes || []).map((ticket:any)=><tr key={ticket.id}><td className="font-bold">{ticket.name}</td><td>{formatMoney(ticket.price)}</td><td>{ticket.soldQuantity || 0}</td><td>{ticket.reservedQuantity || 0}</td><td>{ticket.quantity}</td><td><div className="flex gap-2"><button className="text-xs font-bold text-indigo-700" onClick={()=>{const value=prompt("Max tickets per order",String(ticket.maxPerOrder||1));if(value)run(()=>ticketTypeApi.update(ticket.id,{maxPerOrder:Number(value)}),"Ticket type updated.");}}>Edit</button><button className="text-xs font-bold text-rose-600" onClick={()=>run(()=>ticketTypeApi.remove(ticket.id),"Ticket type removed.")}>Delete</button></div></td></tr>)}
+            {(event?.ticketTypes || []).map((ticket:any)=><tr key={ticket.id}><td className="font-bold">{ticket.name}</td><td>{formatMoney(ticket.price, event?.currency || "BDT")}</td><td>{ticket.soldQuantity || 0}</td><td>{ticket.reservedQuantity || 0}</td><td>{ticket.quantity}</td><td><div className="flex gap-2"><button className="text-xs font-bold text-indigo-700" onClick={()=>{const value=prompt("Max tickets per order",String(ticket.maxPerOrder||1));if(value)run(()=>ticketTypeApi.update(ticket.id,{maxPerOrder:Number(value)}),"Ticket type updated.");}}>Edit</button><button className="text-xs font-bold text-rose-600" onClick={()=>run(()=>ticketTypeApi.remove(ticket.id),"Ticket type removed.")}>Delete</button></div></td></tr>)}
           </tbody></table>
         </div>
       </div>

@@ -89,7 +89,7 @@ export default function EventDetailsPage() {
             {event.coverImageUrl ? <img src={event.coverImageUrl} alt={event.title} className="aspect-[16/9] h-full w-full object-cover" /> : <div className="grid aspect-[16/9] place-items-center text-slate-400"><CalendarDays className="h-14 w-14" /></div>}
           </div>
           <div className="flex flex-col justify-center">
-            <span className="badge w-fit bg-indigo-100 text-indigo-700">{event.category?.name || "Event"}</span>
+            <div className="flex flex-wrap gap-2"><span className="badge bg-indigo-100 text-indigo-700">{event.category?.name || "Event"}</span><span className="badge bg-slate-100 text-slate-700">{event.currency || "BDT"}</span></div>
             <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">{event.title}</h1>
             <p className="mt-4 text-lg leading-8 text-slate-500">{event.shortDescription}</p>
             <div className="mt-6 space-y-3 text-sm text-slate-600">
@@ -133,7 +133,7 @@ export default function EventDetailsPage() {
               <label key={t.id} className={`block cursor-pointer rounded-2xl border p-4 ${selected === t.id ? "border-indigo-500 bg-indigo-50" : "border-slate-200"}`}>
                 <div className="flex items-center justify-between gap-3">
                   <div><p className="font-bold">{t.name}</p><p className="mt-1 text-xs text-slate-500">{available(t)} available</p></div>
-                  <div className="text-right font-black">{Number(t.price) === 0 ? "Free" : formatMoney(t.price)}</div>
+                  <div className="text-right font-black">{Number(t.price) === 0 ? "Free" : formatMoney(t.price, event.currency || "BDT")}</div>
                 </div>
                 <input className="sr-only" type="radio" name="ticket" checked={selected === t.id} onChange={() => setSelected(t.id)} />
               </label>

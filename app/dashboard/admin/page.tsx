@@ -121,7 +121,7 @@ export default function AdminCenterPage(){
       )}
 
       {!loading&&tab==="payments"&&(
-        <div className="mt-8 table-wrap"><table><thead><tr><th>Invoice</th><th>User/order</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead><tbody>{data.map((p)=><tr key={p.id}><td className="font-mono text-xs">{p.invoiceId||p.id}</td><td>{p.order?.orderNumber||p.orderId||"—"}</td><td>{formatMoney(p.amount)}</td><td><span className={statusClass(p.status)}>{p.status}</span></td><td>{formatDate(p.createdAt)}</td></tr>)}</tbody></table></div>
+        <div className="mt-8 table-wrap"><table><thead><tr><th>Invoice</th><th>User/order</th><th>Amount</th><th>Status</th><th>Created</th></tr></thead><tbody>{data.map((p)=><tr key={p.id}><td className="font-mono text-xs">{p.invoiceId||p.id}</td><td>{p.order?.orderNumber||p.orderId||"—"}</td><td>{formatMoney(p.amount, p.currency || p.order?.currency || "BDT")}</td><td><span className={statusClass(p.status)}>{p.status}</span></td><td>{formatDate(p.createdAt)}</td></tr>)}</tbody></table></div>
       )}
 
       {!loading&&tab==="disputes"&&(

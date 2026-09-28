@@ -55,7 +55,7 @@ export default function FinancePage(){
             <table><thead><tr><th>Event / ticket</th><th>Amount</th><th>Reason</th><th>Status</th><th>Requested</th><th>Actions</th></tr></thead><tbody>
               {refunds.map((refund)=><tr key={refund.id}>
                 <td><p className="font-bold">{refund.ticket?.event?.title||refund.event?.title||"Refund"}</p><p className="mt-1 font-mono text-xs text-slate-400">{refund.ticketId}</p></td>
-                <td>{formatMoney(refund.amount||refund.refundAmount)}</td>
+                <td>{formatMoney(refund.requestedAmount ?? refund.amount ?? refund.refundAmount, refund.currency || refund.order?.currency || "BDT")}</td>
                 <td className="max-w-xs text-slate-500">{refund.reason}</td>
                 <td><span className={statusClass(refund.status)}>{refund.status}</span></td>
                 <td>{formatDate(refund.createdAt)}</td>
@@ -90,7 +90,7 @@ export default function FinancePage(){
             <table><thead><tr><th>Event</th><th>Amount</th><th>Status</th><th>Reference</th><th>Updated</th>{isAdmin&&<th>Actions</th>}</tr></thead><tbody>
               {payouts.map((payout)=><tr key={payout.id}>
                 <td className="font-bold">{payout.event?.title||payout.eventId||"Event payout"}</td>
-                <td>{formatMoney(payout.amount||payout.netAmount)}</td>
+                <td>{formatMoney(payout.amount || payout.netAmount, payout.currency || payout.event?.currency || "BDT")}</td>
                 <td><span className={statusClass(payout.status)}>{payout.status}</span></td>
                 <td className="font-mono text-xs">{payout.paymentReference||"—"}</td>
                 <td>{formatDate(payout.updatedAt||payout.createdAt)}</td>
