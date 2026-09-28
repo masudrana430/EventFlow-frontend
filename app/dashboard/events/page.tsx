@@ -48,7 +48,7 @@ export default function OrganizerEventsPage() {
                 </div>
                 <p className="mt-3 text-sm text-slate-500">{formatDate(event.startDateTime)} · {event.venueName || event.venueAddress}</p>
                 <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span className="badge">{event.ticketTypes?.length || 0} ticket types</span>
+                  <span className="badge">{event.ticketTypes?.length || 0} ticket types</span><span className="badge">{event.currency || "BDT"}</span>
                   <span className="badge">Capacity {event.capacity || "—"}</span>
                 </div>
               </div>

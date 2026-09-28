@@ -1,9 +1,14 @@
-export function formatMoney(value: number | string | null | undefined) {
+import type { Currency } from "@/types";
+
+export function formatMoney(
+  value: number | string | null | undefined,
+  currency: Currency = "BDT",
+) {
   const amount = Number(value ?? 0);
-  return new Intl.NumberFormat("en-BD", {
+  return new Intl.NumberFormat(currency === "USD" ? "en-US" : "en-BD", {
     style: "currency",
-    currency: "BDT",
-    maximumFractionDigits: 0,
+    currency,
+    maximumFractionDigits: currency === "USD" ? 2 : 0,
   }).format(Number.isFinite(amount) ? amount : 0);
 }
 

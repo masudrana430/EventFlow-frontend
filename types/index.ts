@@ -1,4 +1,5 @@
 export type UserRole = "SUPER_ADMIN" | "ADMIN" | "ORGANIZER" | "EVENT_STAFF" | "ATTENDEE";
+export type Currency = "BDT" | "USD";
 
 export interface AuthUser {
   id: string;
@@ -73,6 +74,7 @@ export interface EventItem {
   contactEmail?: string;
   contactPhone?: string;
   capacity?: number;
+  currency: Currency;
   status?: string;
   coverImageUrl?: string;
   galleryUrls?: string[];

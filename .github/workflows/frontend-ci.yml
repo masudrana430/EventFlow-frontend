@@ -2,7 +2,7 @@ name: EventFlow Frontend CI
 
 on:
   push:
-    branches: [main, feature/full-eventflow-frontend]
+    branches: [main, feature/full-eventflow-frontend, feature/multi-currency]
   pull_request:
 
 jobs:

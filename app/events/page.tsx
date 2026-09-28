@@ -74,8 +74,8 @@ export default function EventsPage() {
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="badge">{event.category?.name || "Event"}</span>
-                    <span className="text-sm font-bold text-indigo-700">{minPrice > 0 ? `From ${formatMoney(minPrice)}` : "Free / ticketed"}</span>
+                    <div className="flex flex-wrap gap-2"><span className="badge">{event.category?.name || "Event"}</span><span className="badge bg-slate-100 text-slate-700">{event.currency || "BDT"}</span></div>
+                    <span className="text-sm font-bold text-indigo-700">{minPrice > 0 ? `From ${formatMoney(minPrice, event.currency || "BDT")}` : "Free / ticketed"}</span>
                   </div>
                   <h2 className="mt-4 text-xl font-black">{event.title}</h2>
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{event.shortDescription || event.description}</p>

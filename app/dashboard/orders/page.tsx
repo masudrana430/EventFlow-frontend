@@ -40,7 +40,7 @@ export default function OrdersPage() {
               <tr key={order.id}>
                 <td className="font-mono text-xs">{order.orderNumber || order.id}</td>
                 <td className="font-semibold">{order.event?.title || "Event order"}</td>
-                <td>{formatMoney(order.total ?? order.totalAmount ?? order.amount ?? 0)}</td>
+                <td>{formatMoney(order.total ?? order.totalAmount ?? order.amount ?? 0, order.currency || "BDT")}</td>
                 <td><span className={statusClass(order.status)}>{order.status}</span></td>
                 <td>{formatDate(order.createdAt)}</td>
                 <td><Link className="font-bold text-indigo-700" href={`/dashboard/orders/${order.id}`}>View</Link></td>
@@ -55,7 +55,7 @@ export default function OrdersPage() {
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           {payments.map((payment)=>(
             <div className="card" key={payment.id}>
-              <div className="flex items-center justify-between"><p className="font-bold">{formatMoney(payment.amount)}</p><span className={statusClass(payment.status)}>{payment.status}</span></div>
+              <div className="flex items-center justify-between"><p className="font-bold">{formatMoney(payment.amount, payment.currency || payment.order?.currency || "BDT")}</p><span className={statusClass(payment.status)}>{payment.status}</span></div>
               <p className="mt-2 font-mono text-xs text-slate-500">{payment.invoiceId || payment.id}</p>
               <p className="mt-2 text-xs text-slate-400">{formatDate(payment.createdAt)}</p>
             </div>

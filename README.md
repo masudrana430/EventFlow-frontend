@@ -148,3 +148,22 @@ The frontend uses a Bearer access token for API calls. The backend remains the s
 - QR check-in validation
 
 Do not commit API secrets, UddoktaPay credentials, Resend API keys, database credentials or JWT secrets into this repository.
+
+
+## BDT and USD event currencies
+
+EventFlow supports `BDT` and `USD` at the event level.
+
+- An organizer chooses the currency when creating the event.
+- Ticket prices inherit the event currency.
+- Orders, payments, refunds and payouts preserve the same currency.
+- Currency is locked after ticket types are created.
+- The frontend formats BDT and USD separately.
+
+The current UddoktaPay/Paymently Create Charge API accepts an amount but not a currency parameter. Therefore the backend also requires:
+
+```env
+UDDOKTAPAY_CURRENCY=BDT
+```
+
+That value must match the active Paymently invoice/base currency. For Stripe USD testing, switch the Paymently panel to USD and deploy the backend with `UDDOKTAPAY_CURRENCY=USD`. For bKash/Nagad BDT testing, use `BDT`.

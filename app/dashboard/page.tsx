@@ -7,14 +7,39 @@ import { Alert } from "@/components/Alert";
 import { Loading } from "@/components/Loading";
 import { getErrorMessage } from "@/lib/api";
 import { getLocalUser } from "@/lib/auth";
+import { formatMoney } from "@/lib/format";
+import type { Currency } from "@/types";
 import { analyticsApi, notificationApi } from "@/lib/services";
 import type { AuthUser } from "@/types";
 
 function metricEntries(data: any) {
   const source = data?.data ?? data ?? {};
-  return Object.entries(source)
-    .filter(([, value]) => ["number", "string"].includes(typeof value))
-    .slice(0, 8);
+  const entries: Array<[string, string | number]> = [];
+
+  for (const [key, value] of Object.entries(source)) {
+    if (["number", "string"].includes(typeof value)) {
+      entries.push([key, value as string | number]);
+      continue;
+    }
+
+    if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      key.toLowerCase().includes("currency")
+    ) {
+      for (const [currency, amount] of Object.entries(value)) {
+        if (currency === "BDT" || currency === "USD") {
+          entries.push([
+            `${key} ${currency}`,
+            formatMoney(Number(amount ?? 0), currency as Currency),
+          ]);
+        }
+      }
+    }
+  }
+
+  return entries.slice(0, 8);
 }
 
 export default function DashboardPage() {
