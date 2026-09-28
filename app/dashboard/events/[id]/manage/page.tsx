@@ -99,7 +99,7 @@ export default function ManageEventPage() {
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <label className="sm:col-span-2"><span className="label">Name</span><input className="input" value={ticketForm.name} onChange={(e)=>setTicketForm({...ticketForm,name:e.target.value})} required /></label>
             <label className="sm:col-span-2"><span className="label">Description</span><input className="input" value={ticketForm.description} onChange={(e)=>setTicketForm({...ticketForm,description:e.target.value})} /></label>
-            <label><span className="label">Price ({event?.currency || "BDT"})</span><input className="input" type="number" min={0} value={ticketForm.price} onChange={(e)=>setTicketForm({...ticketForm,price:e.target.value})} required /></label>
+            <label><span className="label">Price ({event?.currency || "BDT"})</span><input className="input" type="number" min={0} step="0.01" value={ticketForm.price} onChange={(e)=>setTicketForm({...ticketForm,price:e.target.value})} required /></label>
             <label><span className="label">Quantity</span><input className="input" type="number" min={1} value={ticketForm.quantity} onChange={(e)=>setTicketForm({...ticketForm,quantity:e.target.value})} required /></label>
             <label><span className="label">Max per order</span><input className="input" type="number" min={1} value={ticketForm.maxPerOrder} onChange={(e)=>setTicketForm({...ticketForm,maxPerOrder:e.target.value})} /></label>
             <label><span className="label">Sales start</span><input className="input" type="datetime-local" value={ticketForm.saleStartAt} onChange={(e)=>setTicketForm({...ticketForm,saleStartAt:e.target.value})} required /></label>
