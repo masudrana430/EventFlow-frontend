@@ -8,7 +8,8 @@ export function formatMoney(
   return new Intl.NumberFormat(currency === "USD" ? "en-US" : "en-BD", {
     style: "currency",
     currency,
-    maximumFractionDigits: currency === "USD" ? 2 : 0,
+    minimumFractionDigits: currency === "USD" ? 2 : 0,
+    maximumFractionDigits: 2,
   }).format(Number.isFinite(amount) ? amount : 0);
 }
 
