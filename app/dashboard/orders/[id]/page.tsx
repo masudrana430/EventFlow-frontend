@@ -43,7 +43,7 @@ export default function OrderDetailsPage() {
               <table>
                 <thead><tr><th>Ticket type</th><th>Quantity</th><th>Unit price</th></tr></thead>
                 <tbody>{(order.items || []).map((item:any)=>(
-                  <tr key={item.id}><td>{item.ticketType?.name || item.name || "Ticket"}</td><td>{item.quantity}</td><td>{formatMoney(item.unitPrice ?? item.price)}</td></tr>
+                  <tr key={item.id}><td>{item.ticketTypeName || item.ticketType?.name || item.name || "Ticket"}</td><td>{item.quantity}</td><td>{formatMoney(item.unitPrice ?? item.price)}</td></tr>
                 ))}</tbody>
               </table>
             </div>
